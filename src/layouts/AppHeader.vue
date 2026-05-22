@@ -44,10 +44,7 @@ export default {
     },
 
     currentLanguageLabel() {
-      return (
-        this.languages.find((language) => language.value === this.locale)
-          ?.label || 'English'
-      )
+      return this.languages.find((language) => language.value === this.locale)?.label || 'English'
     },
   },
 
@@ -91,20 +88,47 @@ export default {
 <template>
   <div>
     <v-app-bar
-      :class="theme.global.name.value === 'dark' ? 'app-header-gradient-black' : 'app-header-gradient-white'"
+      :class="
+        theme.global.name.value === 'dark'
+          ? 'app-header-gradient-black'
+          : 'app-header-gradient-white'
+      "
       density="compact"
       elevation="0"
       flat
       location="top"
     >
       <template #append>
+        <!-- Shows all routes on md and larger screens -->
+        <div class="d-none d-md-flex align-center">
+          <v-btn
+            v-for="route in navRoutes"
+            :key="route.path"
+            :active="isActive(route.path)"
+            :color="isActive(route.path) ? 'secondary' : undefined"
+            variant="text"
+            @click="goToRoute(route.path)"
+          >
+            {{ route.label }}
+          </v-btn>
+        </div>
+
+        <!-- Dark mode switch always in app bar -->
+        <v-switch
+          v-model="darkMode"
+          :label="darkMode ? $t('app.darkMode') : $t('app.lightMode')"
+          hide-details
+          inset
+          color="secondary"
+          density="compact"
+          class="mx-2 d-none d-md-flex"
+        />
+
         <v-menu>
           <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              prepend-icon="$web"
-              variant="text"
-            >{{ $t('app.language') }}</v-btn>
+            <v-btn v-bind="props" prepend-icon="$web" variant="text">
+              {{ $t('app.language') }}
+            </v-btn>
           </template>
 
           <v-list>
@@ -121,42 +145,25 @@ export default {
           </v-list>
         </v-menu>
 
-        <v-btn
-          prepend-icon="$Menu"
-          @click="menuOpen = true"
-        >
+        <!-- Under md, keep mobile menu -->
+        <v-btn class="d-flex d-md-none" prepend-icon="$Menu" @click="menuOpen = true">
           {{ $t('app.menu') }}
         </v-btn>
       </template>
     </v-app-bar>
 
-    <v-dialog
-      v-model="menuOpen"
-      fullscreen
-      transition="dialog-bottom-transition"
-    >
-      <v-card
-        class="bg-background"
-        rounded="0"
-      >
+    <v-dialog v-model="menuOpen" fullscreen transition="dialog-bottom-transition">
+      <v-card class="bg-background" rounded="0">
         <v-card-title>
-          <v-row
-            align="end"
-            no-gutters
-          >
+          <v-row align="end" no-gutters>
             <v-col>
               <p class="text-h6 font-weight-bold ma-0">
-                 {{ $t('app.menu') }}
+                {{ $t('app.menu') }}
               </p>
             </v-col>
 
             <v-col cols="auto">
-              <v-btn
-                icon
-                variant="tonal"
-                size="small"
-                @click="menuOpen = false"
-              >
+              <v-btn icon variant="tonal" size="small" @click="menuOpen = false">
                 <v-icon icon="$close" />
               </v-btn>
             </v-col>
@@ -179,40 +186,32 @@ export default {
             </v-list-item>
           </v-list>
 
-          <v-list class="bg-transparent">
-            <v-list-item>
-              <template #prepend>
-                <v-switch
-                  v-model="darkMode"
-                  :label="darkMode ? $t('app.darkMode') : $t('app.lightMode')"
-                  hide-details
-                  inset
-                  color="secondary"
-                  density="compact"
-                />
-              </template>
-            </v-list-item>
-          </v-list>
+          <!-- Dark mode switch always in app bar -->
+          <v-switch
+            v-model="darkMode"
+            :label="darkMode ? $t('app.darkMode') : $t('app.lightMode')"
+            hide-details
+            inset
+            color="secondary"
+            density="compact"
+            class="mx-2"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
-
 <style scoped>
-  .app-header-gradient-black {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0) 100%
-    ) !important;
-  }
-  .app-header-gradient-white {
-    background: linear-gradient(
-      to bottom,
-      rgb(255, 255, 255) 50%,
-      rgba(255, 255, 255, 0) 100%
-    ) !important;
-  }
+.app-header-gradient-black {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%) !important;
+}
+
+.app-header-gradient-white {
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255) 50%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
 </style>
