@@ -90,7 +90,7 @@ export default {
                 <v-chip
                   v-for="tag in project.tags"
                   :key="tag"
-                  color="white"
+                  color="primary"
                   size="small"
                   variant="tonal"
                 >
